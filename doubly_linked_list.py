@@ -131,9 +131,12 @@ if __name__ == "__main__":
     """ 20 is inserted after 8 """
     dll.add_after(8, 20)
 
+    """ 20 is deleted """
+    dll.delete(20)
+
     print(f'Found 40? {dll.find(40) and dll.find(40).data}')
 
     print('All items:')
 
-    """ 8, 20, 3, 10 """
+    """ 8, 3, 10 """
     dll.traverse()

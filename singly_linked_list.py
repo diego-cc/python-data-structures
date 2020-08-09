@@ -110,8 +110,16 @@ if __name__ == "__main__":
     """ 8 is added before 6 """
     sll.add_before(6, 8)
 
+    """ 10 is added after 8 """
+    sll.add_after(8, 10)
+
+    """ 6 is deleted """
+    sll.delete(6)
+
     """ Replace 8 with non-existing values and see the output """
     print(f'Found 8? {sll.find(8) and sll.find(8).data}')
 
     print('All values:')
+
+    """ 8, 10 """
     sll.traverse()
