@@ -4,13 +4,14 @@ class Node:
         self.data = data
         self.next = None
 
+""" Classic linked list. Most operations are O(n) """
 class SinglyLinkedList:
     """ Initialise a Singly Linked List with an optional root value """
     def __init__(self, root:Node = None):
         self.root = root
 
     """ Insert an item to the linked list before another """
-    def add_before(self, item, data):
+    def add_before(self, item, data)->bool:
         start = self.root
         new_node = Node(data)
 
@@ -33,7 +34,7 @@ class SinglyLinkedList:
         return False
 
     """ Insert an item to the linked list after anoter """
-    def add_after(self, item, data):
+    def add_after(self, item, data)->bool:
         start = self.root
         new_node = Node(data)
 
@@ -52,7 +53,7 @@ class SinglyLinkedList:
         return True
 
     """ Delete an item from the linked list """
-    def delete(self, item):
+    def delete(self, item)->bool:
         if self.root is None:
             return False
 
@@ -80,7 +81,7 @@ class SinglyLinkedList:
             current_pos = current_pos.next
 
     """ Find a node in the linked list """
-    def find(self, item):
+    def find(self, item)->Node:
         current_pos = self.root
 
         while current_pos is not None:
