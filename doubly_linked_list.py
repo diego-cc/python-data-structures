@@ -5,7 +5,7 @@ class Node:
         self.prev = None
         self.next = None
 
-""" Two-way linked linked, unoptimised (most operations are still O(n)) """
+""" Two-way linked list, unoptimised (most operations are still O(n)) """
 class DoublyLinkedList:
     def __init__(self, root:Node = None):
         self.root = root
