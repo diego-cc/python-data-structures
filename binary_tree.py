@@ -3,6 +3,7 @@ class Node:
     def __init__(self, data):
         self.left = None
         self.right = None
+        self.parent = None
         self.data = data
 
     """ Conveniently determines whether there is a node at the left of this one """
@@ -13,34 +14,50 @@ class Node:
     def is_right_empty(self)->bool:
         return self.right is None
 
+    def set_data(self, new_data):
+        self.data = new_data
+
+    def __eq__(self, other)->bool:
+        return self.data == other.data
+
+    def __str__(self)->str:
+        return f'Node data: {self.data}\nLeft: {self.left}\nRight: {self.right}\nParent: {self.parent}'
+
 class BinaryTree:
     def __init__(self, root:Node = None):
         self.root = root
 
     """ Add a new node to the tree """
-    def add(self, data):
+    def add(self, data)->bool:
         if self.root is None:
             self.root = Node(data)
+            return True
 
         current_pos = self.root
 
         while True:
             if data < current_pos.data:
                 if current_pos.is_left_empty():
-                    current_pos.left = Node(data)
-                    break
+                    new_node = Node(data)
+                    new_node.parent = current_pos
+                    current_pos.left = new_node
+                    return True
                 else:
                     current_pos = current_pos.left
 
             elif data > current_pos.data:
                 if current_pos.is_right_empty():
-                    current_pos.right = Node(data)
-                    break
+                    new_node = Node(data)
+                    new_node.parent = current_pos
+                    current_pos.right = new_node
+                    return True
                 else:
                     current_pos = current_pos.right
             else:
                 # Trying to add a node with an existing value, ignore it
-                return
+                return False
+
+        return False
 
     """ Search for a node with a given value -> O(logN) """
     def find(self, data)->Node:
@@ -56,30 +73,60 @@ class BinaryTree:
 
         return None
 
-    """
-    Not yet implemented
     def delete(self, data, start_node:Node = None)->bool:
-        if start_node is None:
-            return start_node
+        if self.root is None:
+            return False
 
-        if data < start_node.data:
-            # Move to the left sub-tree
-            start_node.left = self.delete(data, start_node.left)
-        elif data > start_node.data:
-            # Move to the right sub-tree
-            start_node.right = self.delete(data, start_node.right)
-        else:
-            if start_node.is_left_empty():
-                t = start_node.right
-                t = None
-                return t
+        current_pos = self.root
 
-            elif start_node.is_right_empty():
-                t = start_node.left
-                t = Node
-                return t
+        while True:
+            if current_pos is None:
+                # node to be deleted not found
+                break
+            elif current_pos.data < data:
+                current_pos = current_pos.right
+            elif current_pos.data > data:
+                current_pos = current_pos.left
+            else:
+                # node to be deleted was found
+                break
 
-    """
+        if current_pos.data == data:
+            if current_pos.is_left_empty() and not current_pos.is_right_empty():
+                # current_pos.right replaces current_pos
+                current_pos.right.parent = current_pos.parent
+                # TODO: Connect current_pos.parent to current_pos.right or current_pos.left in the next case
+                # Probably non-trivial
+                current_pos = current_pos.right
+            elif not current_pos.is_left_empty() and current_pos.is_right_empty():
+                # current_pos.left replaces current_pos
+                current_pos.left.parent = current_pos.parent
+                current_pos = current_pos.left
+            elif current_pos.is_left_empty() and current_pos.is_right_empty():
+                # current_pos won't be missed!
+                current_pos = None
+            else:
+                # did current_pos come from current_pos.parent.left or current_pos.parent.right?
+                if current_pos.parent.left == current_pos:
+                    # shift current_pos.left to current_pos
+                    current_pos.left.parent = current_pos.parent
+                    current_pos.right.parent = current_pos.left
+                    current_pos.parent.left = current_pos.left
+
+                    current_pos = current_pos.left
+
+                elif current_pos.parent.right == current_pos:
+                    # shift current_pos.right to current_pos
+                    current_pos.right.parent = current_pos.parent
+                    current_pos.left.parent = current_pos.right
+                    current_pos.parent.right = current_pos.right
+
+                    current_pos = current_pos.right
+
+            return True
+
+        return False
+        
 
     """ Traverse the tree in-order (Left -> Root -> Right) """
     def traverse_in_order(self, start_node:Node = None):
