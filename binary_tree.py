@@ -1,4 +1,8 @@
+from typing import Union
+
 """ Nodes of a tree contain three main elements: references to left and right nodes and a value (data) """
+
+
 class Node:
     def __init__(self, data):
         self.left = None
@@ -7,28 +11,32 @@ class Node:
         self.data = data
 
     """ Conveniently determines whether there is a node at the left of this one """
-    def is_left_empty(self)->bool:
+
+    def is_left_empty(self) -> bool:
         return self.left is None
 
     """ Conveniently determines whether there is a node at the right of this one """
-    def is_right_empty(self)->bool:
+
+    def is_right_empty(self) -> bool:
         return self.right is None
 
     def set_data(self, new_data):
         self.data = new_data
 
-    def __eq__(self, other)->bool:
+    def __eq__(self, other) -> bool:
         return self.data == other.data
 
-    def __str__(self)->str:
+    def __str__(self) -> str:
         return f'Node data: {self.data}\nLeft: {self.left}\nRight: {self.right}\nParent: {self.parent}'
 
+
 class BinaryTree:
-    def __init__(self, root:Node = None):
+    def __init__(self, root: Node = None):
         self.root = root
 
     """ Add a new node to the tree """
-    def add(self, data)->bool:
+
+    def add(self, data) -> bool:
         if self.root is None:
             self.root = Node(data)
             return True
@@ -57,10 +65,9 @@ class BinaryTree:
                 # Trying to add a node with an existing value, ignore it
                 return False
 
-        return False
-
     """ Search for a node with a given value -> O(logN) """
-    def find(self, data)->Node:
+
+    def find(self, data) -> Union[Node, None]:
         current_pos = self.root
 
         while current_pos is not None:
@@ -73,7 +80,7 @@ class BinaryTree:
 
         return None
 
-    def delete(self, data, start_node:Node = None)->bool:
+    def delete(self, data) -> bool:
         if self.root is None:
             return False
 
@@ -101,7 +108,7 @@ class BinaryTree:
                     current_pos.parent.right = current_pos.right
                 else:
                     # current_pos is situated at the left-hand side of its parent
-                    current_pos.parent.left = current_pos.right                
+                    current_pos.parent.left = current_pos.right
             elif not current_pos.is_left_empty() and current_pos.is_right_empty():
                 # current_pos.left replaces current_pos
                 current_pos.left.parent = current_pos.parent
@@ -114,7 +121,7 @@ class BinaryTree:
                     current_pos.parent.right = None
                 else:
                     # current_pos is situated at the left-hand side of its parent
-                    current_pos.parent.left = None      
+                    current_pos.parent.left = None
             else:
                 # did current_pos come from current_pos.parent.left or current_pos.parent.right?
                 if current_pos.parent.left == current_pos:
@@ -136,24 +143,45 @@ class BinaryTree:
             return True
 
         return False
-        
 
     """ Traverse the tree in-order (Left -> Root -> Right) """
-    def traverse_in_order(self, start_node:Node = None):
+
+    def traverse_in_order(self, start_node: Node = None):
         t = []
-        
+
         if start_node:
             t = self.traverse_in_order(start_node.left)
             t.append(start_node.data)
-            t = t + self.traverse_in_order(start_node.right)
+            t += self.traverse_in_order(start_node.right)
 
         return t
 
-    """ Traverse the tree pre-order """
-    # def traverse_pre_order(self, start_node:Node = None):
+    """ Traverse the tree pre-order (Root -> Left -> Right) """
+
+    def traverse_pre_order(self, start_node: Node = None):
+        t = []
+
+        if start_node:
+            t.append(start_node.data)
+            t += self.traverse_pre_order(start_node.left)
+            t += self.traverse_pre_order(start_node.right)
+
+        return t
+
+    """ Traverse the tree post-order (Left -> Right -> Root) """
+
+    def traverse_post_order(self, start_node: Node = None):
+        t = []
+
+        if start_node:
+            t += self.traverse_post_order(start_node.left)
+            t += self.traverse_post_order(start_node.right)
+            t.append(start_node.data)
+
+        return t
+
 
 if __name__ == "__main__":
-    
     """ Initialise tree with root node value = 2 """
     tree = BinaryTree(Node(2))
 
@@ -167,9 +195,13 @@ if __name__ == "__main__":
     tree.add(15)
     tree.add(9)
 
-    print(f'Deleted 7: {tree.delete(7)}')
+    print(f'In-order traversal: {tree.traverse_in_order(tree.root)}')
+    print(f'Pre-order traversal: {tree.traverse_pre_order(tree.root)}')
+    print(f'Post-order traversal: {tree.traverse_post_order(tree.root)}')
 
-    print(tree.traverse_in_order(tree.root))
+    print()
+    print(f'Deleted 7: {tree.delete(7)}')
 
     """ Replace 7 with another value and see the output """
     print(f'Search for 7: {tree.find(7) and tree.find(7).data}')
+    print(f'Search for 10: {tree.find(10) and tree.find(10).data}')
