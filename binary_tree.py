@@ -95,16 +95,26 @@ class BinaryTree:
             if current_pos.is_left_empty() and not current_pos.is_right_empty():
                 # current_pos.right replaces current_pos
                 current_pos.right.parent = current_pos.parent
-                # TODO: Connect current_pos.parent to current_pos.right or current_pos.left in the next case
-                # Probably non-trivial
-                current_pos = current_pos.right
+                if current_pos.parent.right == current_pos:
+                    # current_pos is situated at the right-hand side of its parent
+                    # link parent to current_pos.right
+                    current_pos.parent.right = current_pos.right
+                else:
+                    # current_pos is situated at the left-hand side of its parent
+                    current_pos.parent.left = current_pos.right                
             elif not current_pos.is_left_empty() and current_pos.is_right_empty():
                 # current_pos.left replaces current_pos
                 current_pos.left.parent = current_pos.parent
                 current_pos = current_pos.left
             elif current_pos.is_left_empty() and current_pos.is_right_empty():
                 # current_pos won't be missed!
-                current_pos = None
+                if current_pos.parent.right == current_pos:
+                    # current_pos is situated at the right-hand side of its parent
+                    # link parent to current_pos.right
+                    current_pos.parent.right = None
+                else:
+                    # current_pos is situated at the left-hand side of its parent
+                    current_pos.parent.left = None      
             else:
                 # did current_pos come from current_pos.parent.left or current_pos.parent.right?
                 if current_pos.parent.left == current_pos:
@@ -156,6 +166,8 @@ if __name__ == "__main__":
     tree.add(7)
     tree.add(15)
     tree.add(9)
+
+    print(f'Deleted 7: {tree.delete(7)}')
 
     print(tree.traverse_in_order(tree.root))
 
